@@ -14,15 +14,15 @@
       min-height: 100vh;
       padding: 20px;
     }
-    .container { max-width: 1000px; margin: 0 auto; text-align: center; }
+    .container { max-width: 1100px; margin: 0 auto; text-align: center; }
     h1 { margin-bottom: 10px; font-size: 2.7rem; }
     .subtitle { margin-bottom: 20px; font-size: 1.2rem; }
 
     .game-board {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 12px;
-      max-width: 700px;
+      max-width: 780px;
       margin: 30px auto;
       perspective: 1000px;
     }
@@ -47,11 +47,11 @@
       box-shadow: 0 5px 18px rgba(0,0,0,0.35);
       font-weight: bold;
     }
-    .card-front { background: #1e3a8a; font-size: 2.6rem; color: #fff; }
+    .card-front { background: #1e3a8a; font-size: 2.4rem; color: #fff; }
     .card-back { 
       background: linear-gradient(135deg, #4facfe, #00f2fe); 
       transform: rotateY(180deg); 
-      font-size: 1.55rem; 
+      font-size: 1.45rem; 
       color: #000;
     }
     .matched .card { transform: rotateY(180deg); cursor: default; }
@@ -97,11 +97,11 @@
   <div class="container">
     <div id="mainContent">
       <h1>🎉 Thursday Prize Flip Giveaway 🎉</h1>
-      <p class="subtitle">Match the pairs to win cash prizes.<br>You have only <strong>5 attempts</strong> (20 cards)</p>
+      <p class="subtitle">Match the pairs to win cash prizes.<br>You have only <strong>5 attempts</strong> (30 cards)</p>
       
       <div id="stats">
         <span>Moves: <strong id="moves">0</strong></span> &nbsp;&nbsp;&nbsp;
-        <span>Pairs Found: <strong id="pairs">0</strong>/10</span>
+        <span>Pairs Found: <strong id="pairs">0</strong>/15</span>
       </div>
 
       <div class="trial-info">
@@ -139,7 +139,7 @@
 
   <script>
     // ============== DAILY RESTRICTION ==============
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     const playedKey = 'thursdayGiveawayPlayed';
 
     if (localStorage.getItem(playedKey) === today) {
@@ -150,7 +150,8 @@
     }
 
     function startGame() {
-      const prizes = ["₦30", "₦50", "₦100", "₦200", "₦500", "₦30", "₦50", "₦100", "₦200", "₦500"];
+      // Updated prices including ₦10 and ₦20
+      const prizes = ["₦10", "₦20", "₦30", "₦50", "₦100", "₦200", "₦500", "₦10", "₦20", "₦30", "₦50", "₦100", "₦200", "₦500", "₦30"];
 
       let firstCard = null, secondCard = null, lockBoard = false;
       let moves = 0, pairsFound = 0, trialsLeft = 5, gameEnded = false;
@@ -165,7 +166,7 @@
       const shareBtn = document.getElementById('shareBtn');
 
       function createCards() {
-        let cardsArray = [...prizes, ...prizes];
+        let cardsArray = [...prizes, ...prizes]; // 30 cards (15 pairs)
         cardsArray.sort(() => Math.random() - 0.5);
 
         gameBoard.innerHTML = '';
@@ -173,7 +174,10 @@
           const card = document.createElement('div');
           card.classList.add('card');
           card.dataset.prize = prize;
-          card.innerHTML = `<div class="card-front">?</div><div class="card-back">${prize}</div>`;
+          card.innerHTML = `
+            <div class="card-front">?</div>
+            <div class="card-back">${prize}</div>
+          `;
           card.addEventListener('click', flipCard);
           gameBoard.appendChild(card);
         });
@@ -206,7 +210,7 @@
           pairsFound++;
           pairsEl.textContent = pairsFound;
           resetTurn();
-          if (pairsFound === 10) endGame();
+          if (pairsFound === 15) endGame();
         } else {
           setTimeout(() => {
             firstCard.classList.remove('flipped');
@@ -233,7 +237,7 @@
 
       function showForm() {
         const formHTML = `
-          <h2>Game Over! You found ${pairsFound}/10 pairs</h2>
+          <h2>Game Over! You found ${pairsFound}/15 pairs</h2>
           <p>Submit your Airtime details:</p>
           <input type="text" id="name" placeholder="Your Full Name" style="margin:8px 0;padding:12px;width:100%;border-radius:8px;border:none;">
           <input type="tel" id="phoneNumber" placeholder="Phone Number (08012345678)" style="margin:8px 0;padding:12px;width:100%;border-radius:8px;border:none;">
@@ -273,7 +277,7 @@
           <div style="background: linear-gradient(135deg, #ffffff, #f0f8ff); padding:45px 35px; border-radius:25px; text-align:center; box-shadow: 0 20px 50px rgba(0,0,0,0.25);">
             <h1 style="color:#e74c3c; font-size:32px;">🎉 Thursday Prize Flip 🎉</h1>
             <p style="font-size:24px; margin:20px 0;"><strong>${name}</strong></p>
-            <p style="font-size:28px; color:#27ae60; font-weight:bold;">${pairsFound}/10 Pairs Found</p>
+            <p style="font-size:28px; color:#27ae60; font-weight:bold;">${pairsFound}/15 Pairs Found</p>
             
             <div style="background:#f1f1f1; padding:25px; border-radius:16px; margin:30px 0; font-size:21px;">
               <strong>Total Prize Won:</strong> ₦${totalPrize.toLocaleString()}<br><br>
@@ -290,7 +294,7 @@
         resultSection.classList.remove('hidden');
         resultSection.scrollIntoView({ behavior: "smooth" });
 
-        // Mark as played today
+        // Mark as played today (daily restriction)
         localStorage.setItem('thursdayGiveawayPlayed', today);
       };
 
@@ -306,7 +310,7 @@
 
           window.open(`https://wa.me/?text=🎉%20My%20Thursday%20Prize%20Flip%20Result`, '_blank');
 
-          alert("✅ Image downloaded successfully!\n\nNow open WhatsApp, attach the image from Downloads, and send to the admin.");
+          alert("✅ Image downloaded successfully!\n\nNow open WhatsApp, attach the image from your Downloads folder, and send it to the admin.");
         } catch (err) {
           alert("Failed to generate image.");
         }
@@ -322,4 +326,3 @@
   </script>
 </body>
 </html>
-  
