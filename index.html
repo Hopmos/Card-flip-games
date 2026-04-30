@@ -97,7 +97,7 @@
   <div class="container">
     <div id="mainContent">
       <h1>🎉 Thursday Prize Flip Giveaway 🎉</h1>
-      <p class="subtitle">Match the pairs to win cash prizes.<br>You have only <strong>5 attempts</strong> (30 cards)</p>
+      <p class="subtitle">Match the pairs to win cash prizes.<br>You have only <strong>4 attempts</strong> (30 cards)</p>
       
       <div id="stats">
         <span>Moves: <strong id="moves">0</strong></span> &nbsp;&nbsp;&nbsp;
@@ -105,7 +105,7 @@
       </div>
 
       <div class="trial-info">
-        Attempts Left: <strong id="trialsLeft">5</strong>
+        Attempts Left: <strong id="trialsLeft">4</strong>
       </div>
 
       <div class="game-board" id="gameBoard"></div>
@@ -150,11 +150,10 @@
     }
 
     function startGame() {
-      // Updated prices including ₦10 and ₦20
       const prizes = ["₦10", "₦20", "₦30", "₦50", "₦100", "₦200", "₦500", "₦10", "₦20", "₦30", "₦50", "₦100", "₦200", "₦500", "₦30"];
 
       let firstCard = null, secondCard = null, lockBoard = false;
-      let moves = 0, pairsFound = 0, trialsLeft = 5, gameEnded = false;
+      let moves = 0, pairsFound = 0, trialsLeft = 4, gameEnded = false;
       let totalPrize = 0;
 
       const gameBoard = document.getElementById('gameBoard');
@@ -232,10 +231,14 @@
       function endGame() {
         gameEnded = true;
         lockBoard = true;
-        setTimeout(showForm, 800);
+
+        // Mark as played today - This is the key restriction
+        localStorage.setItem(playedKey, today);
+
+        setTimeout(showResult, 800);
       }
 
-      function showForm() {
+      function showResult() {
         const formHTML = `
           <h2>Game Over! You found ${pairsFound}/15 pairs</h2>
           <p>Submit your Airtime details:</p>
@@ -293,9 +296,6 @@
         prizeImage.innerHTML = imageHTML;
         resultSection.classList.remove('hidden');
         resultSection.scrollIntoView({ behavior: "smooth" });
-
-        // Mark as played today (daily restriction)
-        localStorage.setItem('thursdayGiveawayPlayed', today);
       };
 
       shareBtn.addEventListener('click', async () => {
@@ -304,7 +304,7 @@
           const imageData = canvas.toDataURL('image/png');
 
           const link = document.createElement('a');
-          link.download = `Thursday_Giveaway_${document.getElementById('name').value || 'Player'}.png`;
+          link.download = `Thursday_Giveaway_${name || 'Player'}.png`;
           link.href = imageData;
           link.click();
 
@@ -318,11 +318,6 @@
 
       createCards();
     }
-
-    // Owner Details
-    document.getElementById('ownerImage').src = "https://github.com/Hopmos/Webimage/blob/main/id.jpg?raw=true";
-    document.getElementById('ownerName').textContent = "Idorenyin";
-    document.getElementById('ownerBio').textContent = "This Thursday Giveaway is proudly organized by Hopmos Digital Services.";
   </script>
 </body>
 </html>
